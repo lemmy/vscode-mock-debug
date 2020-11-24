@@ -18,7 +18,7 @@ import { activateMockDebug, workspaceFileAccessor } from './activateMockDebug';
  * The compile time flag 'runMode' controls how the debug adapter is run.
  * Please note: the test suite only supports 'external' mode.
  */
-const runMode: 'external' | 'server' | 'namedPipeServer' | 'inline' = 'inline';
+const runMode: 'external' | 'server' | 'namedPipeServer' | 'inline' = 'server';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -83,17 +83,18 @@ class MockDebugAdapterServerDescriptorFactory implements vscode.DebugAdapterDesc
 
 	createDebugAdapterDescriptor(session: vscode.DebugSession, executable: vscode.DebugAdapterExecutable | undefined): vscode.ProviderResult<vscode.DebugAdapterDescriptor> {
 
-		if (!this.server) {
-			// start listening on a random port
-			this.server = Net.createServer(socket => {
-				const session = new MockDebugSession(workspaceFileAccessor);
-				session.setRunAsServer(true);
-				session.start(socket as NodeJS.ReadableStream, socket);
-			}).listen(0);
-		}
+		// if (!this.server) {
+		// 	// start listening on a random port
+		// 	this.server = Net.createServer(socket => {
+		// 		const session = new MockDebugSession(workspaceFileAccessor);
+		// 		session.setRunAsServer(true);
+		// 		session.start(socket as NodeJS.ReadableStream, socket);
+		// 	}).listen(0);
+		// }
 
 		// make VS Code connect to debug server
-		return new vscode.DebugAdapterServer((this.server.address() as Net.AddressInfo).port);
+		// return new vscode.DebugAdapterServer((this.server.address() as Net.AddressInfo).port);
+		return new vscode.DebugAdapterServer(4712);
 	}
 
 	dispose() {
